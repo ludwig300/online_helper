@@ -24,6 +24,9 @@ def detect_intent_text(project_id, session_id, text, language_code):
         }
     )
 
+    if response.query_result.intent.is_fallback:
+        return None
+
     return response.query_result.fulfillment_text
 
 
@@ -50,11 +53,12 @@ def main():
                 dialogflow_language_code
             )
 
-            vk_session.method('messages.send', {
-                'user_id': user_id,
-                'message': dialogflow_response,
-                'random_id': 0
-            })
+            if dialogflow_response:
+                vk_session.method('messages.send', {
+                    'user_id': user_id,
+                    'message': dialogflow_response,
+                    'random_id': 0
+                })
 
 
 if __name__ == '__main__':
