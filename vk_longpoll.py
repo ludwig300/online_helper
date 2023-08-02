@@ -39,21 +39,22 @@ def main():
     dialogflow_language_code = 'ru'
 
     for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW:
+        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             user_text = event.text
-            dialogflow_session_id = 1241563
-
+            user_id = event.user_id
+            dialogflow_session_id = str(user_id)
             dialogflow_response = detect_intent_text(
-                project_id,
-                dialogflow_session_id,
-                user_text,
+                project_id, 
+                dialogflow_session_id, 
+                user_text, 
                 dialogflow_language_code
             )
-            if event.to_me:
-                print('Для меня от: ', event.user_id)
-            else:
-                print('От меня для: ', event.user_id)
-            print('Текст:', dialogflow_response)
+
+            vk_session.method('messages.send', {
+                'user_id': user_id,
+                'message': dialogflow_response,
+                'random_id': 0
+            })
 
 
 if __name__ == '__main__':
