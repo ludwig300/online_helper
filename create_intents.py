@@ -55,7 +55,10 @@ if __name__ == "__main__":
         "--project-id", help="Project/agent id.  Required.", required=True
     )
     parser.add_argument(
-        "--file", help="Path to the intents file. Required.", required=True
+        "--file",
+        help="Path to the intents file. Required.",
+        default='questions.json',
+        required=True
     )
 
     args = parser.parse_args()

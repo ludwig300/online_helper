@@ -8,11 +8,6 @@ from telegram.ext import (CallbackContext, CommandHandler, Filters,
 from telegram import Bot
 
 
-def send_telegram_message(token, chat_id, message):
-    bot = Bot(token=token)
-    bot.send_message(chat_id=chat_id, text=message)
-
-
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Здравствуйте!')
 
@@ -32,8 +27,7 @@ def detect_intent_texts(project_id, session_id, text, language_code, update: Upd
     update.message.reply_text(response.query_result.fulfillment_text)
 
 
-def echo(update: Update, context: CallbackContext) -> None:
-    """Эхо функция: отправляет сообщение пользователя в DialogFlow."""
+def handle_user_input(update: Update, context: CallbackContext) -> None:
     project_id = os.getenv('DF_PROJECT_ID')
     session_id = str(update.effective_user.id)
     language_code = "ru"
@@ -47,7 +41,8 @@ def error_callback(update: Update, context: CallbackContext) -> None:
     telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
 
     error_message = f"Произошла ошибка во время работы Телеграм бота:\n{context.error}"
-    send_telegram_message(logger_tg_token, telegram_chat_id, error_message)
+    bot = Bot(token=logger_tg_token)
+    bot.send_message(chat_id=telegram_chat_id, text=error_message)
 
 
 def main() -> None:
@@ -58,7 +53,7 @@ def main() -> None:
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('start', start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_user_input))
 
     # Регистрируем обработчик ошибок
     dispatcher.add_error_handler(error_callback)
