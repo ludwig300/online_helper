@@ -36,8 +36,8 @@ def create_intent(
     print("Intent created: {}".format(response))
 
 
-def create_intents_from_file(project_id, filename):
-    with open('questions.json', 'r', encoding='utf-8') as f:
+def create_intents_from_file(project_id, file):
+    with open(file, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     for intent_name, intent_data in data.items():
