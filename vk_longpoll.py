@@ -2,38 +2,10 @@ import os
 
 import vk_api
 from dotenv import load_dotenv
-from google.cloud import dialogflow
-from vk_api.longpoll import VkEventType, VkLongPoll
 from telegram import Bot
+from vk_api.longpoll import VkEventType, VkLongPoll
 
-
-def send_telegram_message(token, chat_id, message):
-    bot = Bot(token=token)
-    bot.send_message(chat_id=chat_id, text=message)
-
-
-def detect_intent_text(project_id, session_id, text, language_code):
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, session_id)
-
-    text_input = dialogflow.TextInput(
-        text=text,
-        language_code=language_code
-    )
-
-    query_input = dialogflow.QueryInput(text=text_input)
-
-    response = session_client.detect_intent(
-        request={
-            "session": session,
-            "query_input": query_input
-        }
-    )
-
-    if response.query_result.intent.is_fallback:
-        return None
-
-    return response.query_result.fulfillment_text
+from dialogflow_functions import detect_intent_text
 
 
 def main():
@@ -45,7 +17,6 @@ def main():
 
     longpoll = VkLongPoll(vk_session)
 
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
     project_id = os.getenv('DF_PROJECT_ID')
     dialogflow_language_code = 'ru'
 
@@ -56,9 +27,9 @@ def main():
                 user_id = event.user_id
                 dialogflow_session_id = str(user_id)
                 dialogflow_response = detect_intent_text(
-                    project_id, 
-                    dialogflow_session_id, 
-                    user_text, 
+                    project_id,
+                    dialogflow_session_id,
+                    user_text,
                     dialogflow_language_code
                 )
 
@@ -70,7 +41,8 @@ def main():
                     })
     except Exception as e:
         error_message = f"Произошла ошибка во время работы Vk бота::\n{e}"
-        send_telegram_message(logger_tg_token, telegram_chat_id, error_message)
+        bot = Bot(token=logger_tg_token)
+        bot.send_message(chat_id=telegram_chat_id, text=error_message)
         raise e
 
 

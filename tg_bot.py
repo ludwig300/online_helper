@@ -2,10 +2,11 @@ import os
 
 from dotenv import load_dotenv
 from google.cloud import dialogflow
-from telegram import Update
+from telegram import Bot, Update
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
                           MessageHandler, Updater)
-from telegram import Bot
+
+from dialogflow_functions import detect_intent_text
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -32,7 +33,13 @@ def handle_user_input(update: Update, context: CallbackContext) -> None:
     session_id = str(update.effective_user.id)
     language_code = "ru"
     text = update.message.text
-    detect_intent_texts(project_id, session_id, text, language_code, update, context)
+    response_text = detect_intent_text(
+        project_id,
+        session_id,
+        text,
+        language_code
+    )
+    update.message.reply_text(response_text)
 
 
 def error_callback(update: Update, context: CallbackContext) -> None:
@@ -53,7 +60,9 @@ def main() -> None:
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('start', start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_user_input))
+    dispatcher.add_handler(
+        MessageHandler(Filters.text & ~Filters.command, handle_user_input)
+    )
 
     # Регистрируем обработчик ошибок
     dispatcher.add_error_handler(error_callback)
