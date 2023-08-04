@@ -1,4 +1,5 @@
 import os
+import random
 
 import vk_api
 from dotenv import load_dotenv
@@ -37,7 +38,7 @@ def main():
                     vk_session.method('messages.send', {
                         'user_id': user_id,
                         'message': dialogflow_response,
-                        'random_id': 0
+                        'random_id': random.randint(1, 1e9)
                     })
     except Exception as e:
         error_message = f"Произошла ошибка во время работы Vk бота::\n{e}"

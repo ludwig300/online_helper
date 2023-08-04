@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-from google.cloud import dialogflow
 from telegram import Bot, Update
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
                           MessageHandler, Updater)
@@ -11,21 +10,6 @@ from dialogflow_functions import detect_intent_text
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Здравствуйте!')
-
-
-def detect_intent_texts(project_id, session_id, text, language_code, update: Update, context: CallbackContext):
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, session_id)
-
-    text_input = dialogflow.TextInput(text=text, language_code=language_code)
-    query_input = dialogflow.QueryInput(text=text_input)
-
-    response = session_client.detect_intent(
-        request={"session": session, "query_input": query_input}
-    )
-
-    # Отправляем пользователю Telegram ответ бота DialogFlow
-    update.message.reply_text(response.query_result.fulfillment_text)
 
 
 def handle_user_input(update: Update, context: CallbackContext) -> None:
