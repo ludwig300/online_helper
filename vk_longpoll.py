@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from telegram import Bot
 from vk_api.longpoll import VkEventType, VkLongPoll
 
-from dialogflow_functions import detect_intent_text
+from dialogflow import detect_intent_text
 
 
 def main():

@@ -5,7 +5,7 @@ from telegram import Bot, Update
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
                           MessageHandler, Updater)
 
-from dialogflow_functions import detect_intent_text
+from dialogflow import detect_intent_text
 
 
 def start(update: Update, context: CallbackContext) -> None:
