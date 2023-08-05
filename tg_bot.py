@@ -23,7 +23,7 @@ def handle_user_input(update: Update, context: CallbackContext) -> None:
         text,
         language_code
     )
-    update.message.reply_text(response_text)
+    update.message.reply_text(response_text.query_result.fulfillment_text)
 
 
 def error_callback(update: Update, context: CallbackContext) -> None:

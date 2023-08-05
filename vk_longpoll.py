@@ -27,19 +27,19 @@ def main():
                 user_text = event.text
                 user_id = event.user_id
                 dialogflow_session_id = str(user_id)
-                dialogflow_response = detect_intent_text(
+                response = detect_intent_text(
                     project_id,
                     dialogflow_session_id,
                     user_text,
                     dialogflow_language_code
                 )
-
-                if dialogflow_response:
+                if response.query_result.intent.is_fallback == False:
                     vk_session.method('messages.send', {
                         'user_id': user_id,
-                        'message': dialogflow_response,
+                        'message': response.query_result.fulfillment_text,
                         'random_id': random.randint(1, 1e9)
                     })
+
     except Exception as e:
         error_message = f"Произошла ошибка во время работы Vk бота::\n{e}"
         bot = Bot(token=logger_tg_token)
